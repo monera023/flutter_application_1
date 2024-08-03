@@ -3,8 +3,11 @@ import 'package:flutter_application_1/components/button.dart';
 import 'package:flutter_application_1/models/food.dart';
 import 'package:flutter_application_1/themes/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../components/food_tile.dart';
+import '../models/shop.dart';
+import 'food_details_page.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -14,34 +17,42 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
-  // food menu
-  List foodMenu = [
-    Food(
-        name: "Salmon Sushi",
-        price: "21.0",
-        imagePath: "lib/images/salmon.png",
-        rating: "4.9"),
-    Food(
-        name: "Tuna",
-        price: "18.0",
-        imagePath: "lib/images/tuna.png",
-        rating: "4.5")
-  ];
+
+  // navigate to food item details page
+  void navigateToFoodDetails(int index) {
+    // get shop and its menu
+    final shop = context.read<Shop>();
+    final foodMenu = shop.foodMenu;
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => FoodDetailsPage(food: foodMenu[index])));
+  }
+
   @override
   Widget build(BuildContext context) {
+    // get shop and its menu
+    final shop = context.read<Shop>();
+    final foodMenu = shop.foodMenu;
     return Scaffold(
         backgroundColor: Colors.grey[300],
         appBar: AppBar(
           backgroundColor: Colors.transparent,
+          foregroundColor: Colors.grey[700],
           elevation: 0,
+          titleSpacing: 120.0,
           leading: Icon(
             Icons.menu,
-            color: Colors.grey[900],
           ),
-          title: Text(
-            'Tokyo',
-            style: TextStyle(color: Colors.grey[900]),
-          ),
+          title: Text('Tokyo'),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/cartpage');
+              },
+              icon: Icon(Icons.shopping_cart)
+            )
+          ],
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,8 +105,7 @@ class _MenuPageState extends State<MenuPage> {
                       borderSide: BorderSide(color: Colors.white),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    hintText: "Search here.."
-                ),
+                    hintText: "Search here.."),
               ),
             ),
 
@@ -117,9 +127,12 @@ class _MenuPageState extends State<MenuPage> {
             //popular food
             Expanded(
                 child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
+              scrollDirection: Axis.horizontal,
               itemCount: foodMenu.length,
-              itemBuilder: (context, index) => FoodTile(food: foodMenu[index]),
+              itemBuilder: (context, index) => FoodTile(
+                food: foodMenu[index],
+                onTap: () => navigateToFoodDetails(index),
+              ),
             )),
 
             const SizedBox(height: 10),
@@ -135,34 +148,42 @@ class _MenuPageState extends State<MenuPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(children: [
-                    // image
-                  Image.asset('lib/images/tuna.png', height: 40,),
-
-                  const SizedBox(width: 20),
-                  // name and price
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                    // name
-                    Text("Tuna tuna", style: GoogleFonts.dmSerifDisplay(fontSize: 18)),
+                      // image
+                      Image.asset(
+                        'lib/images/tuna.png',
+                        height: 40,
+                      ),
 
-                    const SizedBox(height: 5),
+                      const SizedBox(width: 20),
+                      // name and price
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // name
+                          Text("Tuna tuna",
+                              style: GoogleFonts.dmSerifDisplay(fontSize: 18)),
 
-                    // price
-                    Text('\$21.00', style: TextStyle(color: Colors.grey[700]),)
+                          const SizedBox(height: 5),
 
-                    // price
-                  ],),
-                  ],),
+                          // price
+                          Text(
+                            '\$21.00',
+                            style: TextStyle(color: Colors.grey[700]),
+                          )
+
+                          // price
+                        ],
+                      ),
+                    ],
+                  ),
 
                   // heart
-                  Icon(
-                    Icons.favorite_outline,
-                    color: Colors.grey[700],
-                    size: 28
-                  )
-              ],),
+                  Icon(Icons.favorite_outline,
+                      color: Colors.grey[700], size: 28)
+                ],
+              ),
             )
           ],
         ));
