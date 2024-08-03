@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/button.dart';
 import 'package:flutter_application_1/themes/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../models/food.dart';
+import '../models/shop.dart';
 
 class FoodDetailsPage extends StatefulWidget {
   final Food food;
@@ -20,7 +22,9 @@ class _FoodDetailsPageState extends State<FoodDetailsPage> {
   // decrement quantity
   void decrementQuantity() {
     setState(() {
-      quatityCount--;
+      if (quatityCount > 0) {
+        quatityCount--;
+      }
     });
   }
 
@@ -32,7 +36,44 @@ class _FoodDetailsPageState extends State<FoodDetailsPage> {
     });
   }
 
-  void addTocart(){}
+  void addTocart(){
+    // only add to cart if quantity is present
+    if (quatityCount > 0) {
+      // get access to ship
+      final shop = context.read<Shop>();
+
+      // add to cart
+      shop.addToCart(widget.food, quatityCount);
+
+      // let the user know it was successfull
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          backgroundColor: primaryColor,
+          content: const Text(
+            "Successfully added to cart",
+            style: TextStyle(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            // ok button
+            IconButton(
+              onPressed: () {
+                // pop once to remove dialog box
+                Navigator.pop(context);
+
+                // pop again to go to previous screen
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.done, color: Colors.white)
+            )
+          ],
+        )
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +199,7 @@ class _FoodDetailsPageState extends State<FoodDetailsPage> {
                   const SizedBox(height: 10),
 
                   // add to cart button
-                  MyButton(text: "Add to card", onTap: addTocart)
+                  MyButton(text: "Add to cart ", onTap: addTocart)
                 ],
               ),
             )
