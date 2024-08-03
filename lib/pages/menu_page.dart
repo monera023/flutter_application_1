@@ -5,6 +5,7 @@ import 'package:flutter_application_1/themes/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../components/food_tile.dart';
+import 'food_details_page.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -27,6 +28,15 @@ class _MenuPageState extends State<MenuPage> {
         imagePath: "lib/images/tuna.png",
         rating: "4.5")
   ];
+
+  // navigate to food item details page
+  void navigateToFoodDetails(int index) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => FoodDetailsPage(food: foodMenu[index])));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,8 +104,7 @@ class _MenuPageState extends State<MenuPage> {
                       borderSide: BorderSide(color: Colors.white),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    hintText: "Search here.."
-                ),
+                    hintText: "Search here.."),
               ),
             ),
 
@@ -117,9 +126,12 @@ class _MenuPageState extends State<MenuPage> {
             //popular food
             Expanded(
                 child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
+              scrollDirection: Axis.horizontal,
               itemCount: foodMenu.length,
-              itemBuilder: (context, index) => FoodTile(food: foodMenu[index]),
+              itemBuilder: (context, index) => FoodTile(
+                food: foodMenu[index],
+                onTap: () => navigateToFoodDetails(index),
+              ),
             )),
 
             const SizedBox(height: 10),
@@ -135,34 +147,42 @@ class _MenuPageState extends State<MenuPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(children: [
-                    // image
-                  Image.asset('lib/images/tuna.png', height: 40,),
-
-                  const SizedBox(width: 20),
-                  // name and price
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                    // name
-                    Text("Tuna tuna", style: GoogleFonts.dmSerifDisplay(fontSize: 18)),
+                      // image
+                      Image.asset(
+                        'lib/images/tuna.png',
+                        height: 40,
+                      ),
 
-                    const SizedBox(height: 5),
+                      const SizedBox(width: 20),
+                      // name and price
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // name
+                          Text("Tuna tuna",
+                              style: GoogleFonts.dmSerifDisplay(fontSize: 18)),
 
-                    // price
-                    Text('\$21.00', style: TextStyle(color: Colors.grey[700]),)
+                          const SizedBox(height: 5),
 
-                    // price
-                  ],),
-                  ],),
+                          // price
+                          Text(
+                            '\$21.00',
+                            style: TextStyle(color: Colors.grey[700]),
+                          )
+
+                          // price
+                        ],
+                      ),
+                    ],
+                  ),
 
                   // heart
-                  Icon(
-                    Icons.favorite_outline,
-                    color: Colors.grey[700],
-                    size: 28
-                  )
-              ],),
+                  Icon(Icons.favorite_outline,
+                      color: Colors.grey[700], size: 28)
+                ],
+              ),
             )
           ],
         ));
